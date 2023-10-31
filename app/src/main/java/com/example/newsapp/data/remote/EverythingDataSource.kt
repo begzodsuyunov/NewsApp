@@ -17,6 +17,16 @@ class EverythingDataSource(private val search: String, private val newsApi: News
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
         return try {
             val position = params.key ?: 1
+
+            if (search.isNullOrEmpty()) {
+                // Handle the case where the search is empty or null, you can return an empty LoadResult
+                return LoadResult.Page(
+                    data = emptyList(),
+                    prevKey = null,
+                    nextKey = null
+                )
+            }
+
             val response = newsApi.everything(search = search)
 
             if (response.isSuccessful) {

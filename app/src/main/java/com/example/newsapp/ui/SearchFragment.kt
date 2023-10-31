@@ -20,6 +20,7 @@ import com.example.newsapp.presenter.impl.SearchViewModelImpl
 import com.example.newsapp.ui.adapter.AllNewsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -39,10 +40,12 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
         viewBinding.rvSearch.adapter = adapter
 
-        viewModel.searchListFlow.onEach {
-            adapter.submitData(it)
-            Log.d("SSS", "$it screen")
-        }.launchIn(viewLifecycleOwner.lifecycleScope)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.searchListFlow.collectLatest { pagingData ->
+                adapter.submitData(pagingData)
+                Log.d("SSS", "$pagingData screenf")
+            }
+        }
 
 
         viewBinding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
